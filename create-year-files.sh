@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Get the current year
-current_year=$(date +%Y)
+current_year=$(date +2023)
 
 # Loop through days 1 to 24
-for day in {1..24}; do
+for day in {1..25}; do
     # Format day with two digits (preceding zero)
     formatted_day=$(printf "%02d" "$day")
 
