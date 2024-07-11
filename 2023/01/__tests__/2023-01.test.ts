@@ -1,4 +1,4 @@
-import {getCalibrationValueSum} from "../2023-01";
+import {getCalibrationValueSum, getCalibrationValueSum2} from "../2023-01";
 import {readFileSync} from "graceful-fs";
 
 describe('AOC-2023-01', () => {
@@ -15,5 +15,20 @@ treb7uchet`;
         expect(getCalibrationValueSum(input)).toEqual(54708)
     });
 
+    it('part 2 test data returns sum of calibration values', () => {
+        const input = `two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen`
 
+        expect (getCalibrationValueSum2(input)).toEqual(281);
+    });
+
+    it('part 2 real data returns sum of calibration values', () => {
+        const input = readFileSync('2023/01/2023-01.txt', 'utf-8');
+        expect(getCalibrationValueSum2(input)).toEqual(54087);
+    });
 });
