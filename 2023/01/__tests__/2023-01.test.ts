@@ -22,7 +22,7 @@ abcone2threexyz
 xtwone3four
 4nineeightseven2
 zoneight234
-7pqrstsixteen`
+7pqrstsixteen`;
 
         expect (getCalibrationValueSum2(input)).toEqual(281);
     });
