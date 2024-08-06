@@ -1,4 +1,3 @@
-
 const availableCubes:Record<string, number> = {
     red: 12,
     green: 13,
@@ -23,9 +22,7 @@ const getGamesRepresentation = (input:string) => {
             });
         })
     })
-
 }
-
 
 export const possibleGameIdsSum = (input:string):number => {
     const impossibleGameIndices = new Set<number>();
