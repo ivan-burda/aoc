@@ -1,4 +1,4 @@
-export class Queue<T> {
+export class QueueAsArray<T> {
     private items: T[] = [];
 
     // Enqueues an item of type T
@@ -9,7 +9,7 @@ export class Queue<T> {
     // Dequeues and returns an item of type T
     dequeue(): T | undefined {
         if (this.isEmpty()) {
-            throw new Error("Queue is empty");
+            throw new Error("QueueAsArray is empty");
         }
         return this.items.shift();
     }
