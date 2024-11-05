@@ -1,3 +1,6 @@
+import {cursor} from "sisteransi";
+import to = cursor.to;
+
 class TreeNode {
     value: number;
     leftChild: TreeNode | null;
@@ -91,4 +94,54 @@ class TreeNode {
         }
         return node.value;
     }
+}
+
+export class BinarySearchTree {
+  private root: TreeNode|null = null;
+
+  insert(value: number){
+      if(this.root === null){
+          this.root = new TreeNode(value);
+      }else{
+          this.root.insert(value, this.root);
+      }
+  }
+
+  search(value:number):number|null{
+      if(!this.root){
+          return null;
+      }
+      if(!this.root.search(value, this.root)){
+          return null;
+      }
+      return this.root.search(value, this.root)?.value ?? null
+  }
+
+  delete(value:number){
+      if(this.root){
+          this.root = this.root.delete(value, this.root)
+          console.log(this.root);
+      }else{
+          console.log("Nothing to delete. Tree is empty")
+          return null;
+      }
+  }
+
+  traverseAndPrint(){
+      if(this.root){
+          this.root.traverseAndPrint(this.root);
+      }else{
+          console.log("The tree is empty.")
+          return null;
+      }
+  }
+
+  findGreatestValue(){
+      if(this.root){
+          return this.root.findGreatestValue(this.root);
+      }else{
+          console.log("The tree is empty.")
+          return null;
+      }
+  }
 }
