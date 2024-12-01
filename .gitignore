@@ -13,7 +13,7 @@
 /out
 
 # test files
-.txt
+*.txt
 
 # misc
 .DS_Store

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the current year
-current_year=$(date +2023)
+current_year=$(date +2024)
 
 # Loop through days 1 to 24
 for day in {1..25}; do
