@@ -120,6 +120,7 @@
 		"kleur": "^3.0.3",
 		"leven": "^3.1.0",
 		"lines-and-columns": "^1.2.4",
+		"lodash": "^4.17.21",
 		"make-dir": "^4.0.0",
 		"makeerror": "^1.0.12",
 		"merge-stream": "^2.0.0",
