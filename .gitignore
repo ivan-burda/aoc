@@ -12,6 +12,9 @@
 /build
 /out
 
+# test files
+.txt
+
 # misc
 .DS_Store
 .env.local
