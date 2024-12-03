@@ -1,9 +1,10 @@
 import {
   getSafeReportsCountPart1,
   getSafeReportsCountPart2,
-  isDecreasing,
-  isIncreasing,
-  isRequiredAllowedDifference,
+  isConstantlyDecreasing,
+  isConstantlyIncreasing,
+  isDifferenceValid,
+  removeItem,
 } from "../2024-02";
 import { readFileSync } from "graceful-fs";
 
@@ -16,36 +17,45 @@ const testInput = `7 6 4 2 1
 
 const fullInput = readFileSync("2024/02/2024-02.txt", "utf8");
 
-describe("isIncreasing", () => {
+describe("isConstantlyIncreasing", () => {
   it("true", () => {
-    expect(isIncreasing([0, 1, 2, 3, 4, 5])).toBe(true);
+    expect(isConstantlyIncreasing([0, 1, 2, 3, 4, 5])).toBe(true);
   });
   it("false", () => {
-    expect(isIncreasing([0, 1, 2, 3, 2, 5])).toBe(false);
+    expect(isConstantlyIncreasing([0, 1, 2, 3, 2, 5])).toBe(false);
   });
 });
 
-describe("isDecreasing", () => {
+describe("isConstantlyDecreasing", () => {
   it("true", () => {
-    expect(isDecreasing([5, 4, 3, 2, 1, 0])).toBe(true);
+    expect(isConstantlyDecreasing([5, 4, 3, 2, 1, 0])).toBe(true);
   });
   it("false", () => {
-    expect(isDecreasing([5, 4, 3, 4, 1, 0])).toBe(false);
+    expect(isConstantlyDecreasing([5, 4, 3, 4, 1, 0])).toBe(false);
   });
 });
 
-describe("isRequiredAllowedDifference", () => {
+describe("isDifferenceValid", () => {
   it("true", () => {
-    expect(isRequiredAllowedDifference(0, 3)).toBe(true);
+    expect(isDifferenceValid(0, 3)).toBe(true);
   });
   it("true", () => {
-    expect(isRequiredAllowedDifference(0, 1)).toBe(true);
+    expect(isDifferenceValid(0, 1)).toBe(true);
   });
   it("false", () => {
-    expect(isRequiredAllowedDifference(1, 1)).toBe(false);
+    expect(isDifferenceValid(1, 1)).toBe(false);
   });
   it("false", () => {
-    expect(isRequiredAllowedDifference(0, 4)).toBe(false);
+    expect(isDifferenceValid(0, 4)).toBe(false);
+  });
+});
+
+describe("removeItem", () => {
+  it("removes required item", () => {
+    expect(removeItem([10, 20, 30, 40, 50], 0)).toEqual([20, 30, 40, 50]);
+  });
+  it("removes required item", () => {
+    expect(removeItem([10, 20, 30, 40, 50], 2)).toEqual([10, 20, 40, 50]);
   });
 });
 
@@ -63,11 +73,6 @@ describe("AOC-2024-02", () => {
   });
 
   it("part2-full: returns safe-report count", () => {
-    // expect(getSafeReportsCount2(fullInput)).not.toEqual(68);
-    // expect(getSafeReportsCount2(fullInput)).not.toEqual(65);
-    // expect(getSafeReportsCount2(fullInput)).not.toEqual(294); - too low
-    // expect(getSafeReportsCount2(fullInput)).not.toEqual(302); - too low
-    // expect(getSafeReportsCount2(fullInput)).not.toEqual(317); - too low
-    expect(getSafeReportsCountPart2(fullInput)).toEqual(294);
+    expect(getSafeReportsCountPart2(fullInput)).toEqual(324);
   });
 });
