@@ -1,6 +1,5 @@
 type Board = string[][];
 type LetterCoordinates = number[];
-type Word = LetterCoordinates[];
 
 const getBoard = (input: string): Board => {
   return input.split("\n").reduce<string[][]>((acc, curr) => {
@@ -28,9 +27,9 @@ const getBoardSize = (boardGrid: Board): number[] => {
 const getLetterAtBoardCoordinates = (
   letterCoordinates: LetterCoordinates,
   board: Board,
-): string | undefined => {
+): string => {
   if (!isPositionWithinBoard(letterCoordinates, board)) {
-    return undefined;
+    return "";
   }
 
   const [boardColumn, boardRow] = letterCoordinates;
@@ -38,8 +37,7 @@ const getLetterAtBoardCoordinates = (
 };
 
 // Part1
-
-const generateWordPossibleCoordinates = (
+const getSearchedWordCountInDirections = (
   wordStartCoordinateX: number,
   wordStartCoordinateY: number,
   wordToSearch: string,
@@ -47,103 +45,77 @@ const generateWordPossibleCoordinates = (
 ) => {
   const wordToSearchLength = wordToSearch.length;
 
-  const UP = [];
-  // for (let i = 0; i < wordToSearchLength; i++) {
-  //   const coordinates = [wordStartCoordinateX, wordStartCoordinateY - i];
-  //   if (isPositionWithinBoard(coordinates, board)) {
-  //     UP.push(coordinates);
-  //   }
-  // }
+  const charsAtDirection: Record<string, (string | undefined)[]> = {
+    UP: [],
+    UP_RIGHT: [],
+    RIGHT: [],
+    DOWN_RIGHT: [],
+    DOWN: [],
+    DOWN_LEFT: [],
+    LEFT: [],
+    UP_LEFT: [],
+  };
 
   for (let i = 0; i < wordToSearchLength; i++) {
-    const letter = getLetterAtBoardCoordinates(
-      [wordStartCoordinateX, wordStartCoordinateY - i],
-      board,
+    charsAtDirection.UP.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX, wordStartCoordinateY - i],
+        board,
+      ),
     );
 
-    if (letter) {
-      UP.push(letter);
-    }
+    charsAtDirection.UP_RIGHT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX + i, wordStartCoordinateY - i],
+        board,
+      ),
+    );
+
+    charsAtDirection.RIGHT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX + i, wordStartCoordinateY],
+        board,
+      ),
+    );
+
+    charsAtDirection.DOWN_RIGHT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX + i, wordStartCoordinateY + i],
+        board,
+      ),
+    );
+    charsAtDirection.DOWN.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX, wordStartCoordinateY + i],
+        board,
+      ),
+    );
+
+    charsAtDirection.DOWN_LEFT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX - i, wordStartCoordinateY + i],
+        board,
+      ),
+    );
+
+    charsAtDirection.LEFT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX - i, wordStartCoordinateY],
+        board,
+      ),
+    );
+
+    charsAtDirection.UP_LEFT.push(
+      getLetterAtBoardCoordinates(
+        [wordStartCoordinateX - i, wordStartCoordinateY - i],
+        board,
+      ),
+    );
   }
 
-  const UP_RIGHT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX + i, wordStartCoordinateY - i];
-    if (isPositionWithinBoard(coordinates, board)) {
-      UP_RIGHT.push(coordinates);
-    }
-  }
-
-  const RIGHT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX + i, wordStartCoordinateY];
-    if (isPositionWithinBoard(coordinates, board)) {
-      RIGHT.push(coordinates);
-    }
-  }
-
-  const DOWN_RIGHT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX + i, wordStartCoordinateY + i];
-    if (isPositionWithinBoard(coordinates, board)) {
-      DOWN_RIGHT.push(coordinates);
-    }
-  }
-
-  const DOWN = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX, wordStartCoordinateY + i];
-    if (isPositionWithinBoard(coordinates, board)) {
-      DOWN.push(coordinates);
-    }
-  }
-
-  const DOWN_LEFT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX - i, wordStartCoordinateY + i];
-    if (isPositionWithinBoard(coordinates, board)) {
-      DOWN_LEFT.push(coordinates);
-    }
-  }
-
-  const LEFT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX - i, wordStartCoordinateY];
-    if (isPositionWithinBoard(coordinates, board)) {
-      LEFT.push(coordinates);
-    }
-  }
-
-  const UP_LEFT = [];
-  for (let i = 0; i < wordToSearchLength; i++) {
-    const coordinates = [wordStartCoordinateX - i, wordStartCoordinateY - i];
-    if (isPositionWithinBoard(coordinates, board)) {
-      UP_LEFT.push(coordinates);
-    }
-  }
-
-  const relatedWords = [
-    UP,
-    UP_RIGHT,
-    RIGHT,
-    DOWN_RIGHT,
-    DOWN,
-    DOWN_LEFT,
-    LEFT,
-    UP_LEFT,
-  ].filter((direction) => direction.length === wordToSearch.length);
-
-  return relatedWords
-    .map((currentWordLetterCoordinates) =>
-      currentWordLetterCoordinates
-        .map(
-          (letterCoordinates) =>
-            board[letterCoordinates[1]][letterCoordinates[0]],
-        )
-        .join(""),
-    )
-    .filter((locatedWord) => locatedWord === wordToSearch)
-    .filter((findings) => findings.length);
+  return Object.values(charsAtDirection)
+    .map((charactersAtDirection) => charactersAtDirection.join(""))
+    .filter((word) => word === wordToSearch).length;
 };
 
 export const getXMASWordCount = (input: string): number => {
@@ -155,14 +127,12 @@ export const getXMASWordCount = (input: string): number => {
   for (let yIndex = 0; yIndex < gameHeight; yIndex++) {
     for (let xIndex = 0; xIndex < gameWidth; xIndex++) {
       if (getLetterAtBoardCoordinates([xIndex, yIndex], board) === "X") {
-        const relatedWords = generateWordPossibleCoordinates(
+        locatedXMASWordCount += getSearchedWordCountInDirections(
           xIndex,
           yIndex,
           wordToSearch,
           board,
         );
-
-        locatedXMASWordCount += relatedWords.length;
       }
     }
   }
