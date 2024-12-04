@@ -9,19 +9,18 @@ const getBoard = (input: string): Board => {
 };
 
 const isPositionWithinBoard = (
-  coordinates: number[],
-  grid: string[][],
+  positionCoordinates: LetterCoordinates,
+  board: Board,
 ): boolean => {
-  const maxX = grid[0].length - 1;
-  const maxY = grid.length - 1;
-  const [x, y] = coordinates;
-  return x >= 0 && y >= 0 && x <= maxX && y <= maxY;
+  const [x, y] = positionCoordinates;
+  const [maxCoordinateX, maxCoordinateY] = getMaxBoardCoordinates(board);
+  return x >= 0 && y >= 0 && x <= maxCoordinateX && y <= maxCoordinateY;
 };
 
-const getBoardSize = (boardGrid: Board): number[] => {
-  const gameWidth = boardGrid[0].length;
-  const gameHeight = boardGrid.length;
-  return [gameWidth, gameHeight];
+const getMaxBoardCoordinates = (board: Board): number[] => {
+  const maxCoordinateX = board[0].length - 1;
+  const maxCoordinateY = board.length - 1;
+  return [maxCoordinateX, maxCoordinateY];
 };
 
 const getLetterAtBoardCoordinates = (
@@ -119,17 +118,30 @@ const getSearchedWordCountInDirections = (
 };
 
 export const getXMASWordCount = (input: string): number => {
-  const wordToSearch = "XMAS";
   const board = getBoard(input);
-  const [gameWidth, gameHeight] = getBoardSize(board);
-  let locatedXMASWordCount = 0;
+  const [maxCoordinateX, maxCoordinateY] = getMaxBoardCoordinates(board);
+  const wordToSearch = "XMAS";
+  let locatedXmasWordCount = 0;
 
-  for (let yIndex = 0; yIndex < gameHeight; yIndex++) {
-    for (let xIndex = 0; xIndex < gameWidth; xIndex++) {
-      if (getLetterAtBoardCoordinates([xIndex, yIndex], board) === "X") {
-        locatedXMASWordCount += getSearchedWordCountInDirections(
-          xIndex,
-          yIndex,
+  for (
+    let boardCoordinateY = 0;
+    boardCoordinateY <= maxCoordinateY;
+    boardCoordinateY++
+  ) {
+    for (
+      let boardCoordinateX = 0;
+      boardCoordinateX <= maxCoordinateX;
+      boardCoordinateX++
+    ) {
+      if (
+        getLetterAtBoardCoordinates(
+          [boardCoordinateX, boardCoordinateY],
+          board,
+        ) === "X"
+      ) {
+        locatedXmasWordCount += getSearchedWordCountInDirections(
+          boardCoordinateX,
+          boardCoordinateY,
           wordToSearch,
           board,
         );
@@ -137,7 +149,7 @@ export const getXMASWordCount = (input: string): number => {
     }
   }
 
-  return locatedXMASWordCount;
+  return locatedXmasWordCount;
 };
 
 // Part2
@@ -175,14 +187,27 @@ const isXmasCross = (
 
 export const getXmasCrossCount = (input: string): number => {
   const board = getBoard(input);
-  const [boardWidth, boardHeight] = getBoardSize(board);
+  const [maxCoordinateX, maxCoordinateY] = getMaxBoardCoordinates(board);
   const crossMiddleLetter = "A";
   let locatedXmasCrossCount = 0;
 
-  for (let yIndex = 0; yIndex < boardHeight; yIndex++) {
-    for (let xIndex = 0; xIndex < boardWidth; xIndex++) {
-      if (board[yIndex][xIndex] === crossMiddleLetter) {
-        if (isXmasCross(xIndex, yIndex, board)) {
+  for (
+    let boardCoordinateY = 0;
+    boardCoordinateY <= maxCoordinateY;
+    boardCoordinateY++
+  ) {
+    for (
+      let boardCoordinateX = 0;
+      boardCoordinateX <= maxCoordinateX;
+      boardCoordinateX++
+    ) {
+      if (
+        getLetterAtBoardCoordinates(
+          [boardCoordinateX, boardCoordinateY],
+          board,
+        ) === crossMiddleLetter
+      ) {
+        if (isXmasCross(boardCoordinateX, boardCoordinateY, board)) {
           locatedXmasCrossCount++;
         }
       }
