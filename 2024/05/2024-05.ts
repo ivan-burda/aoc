@@ -10,7 +10,7 @@ const getUpdates = (updatesInput: string): Rule[] => {
   return updatesInput.split("\n").map((line) => line.split(","));
 };
 
-export const getMiddlePageSum = (
+export const getMiddlePageSumForCorrectUpdates = (
   rulesInput: string,
   updatesInput: string,
 ): number => {
@@ -39,4 +39,14 @@ export const getMiddlePageSum = (
     total = total + Number(currentUpdate[(currentUpdate.length - 1) / 2]);
     return total;
   }, 0);
+};
+
+export const getMiddlePageSumForCorrectedUpdates = (
+  rulesInput: string,
+  updatesInput: string,
+): number => {
+  const rules = getRules(rulesInput);
+  const updates = getUpdates(updatesInput);
+
+  return 0;
 };

@@ -1,4 +1,7 @@
-import { getMiddlePageSum } from "../2024-05";
+import {
+  getMiddlePageSumForCorrectUpdates,
+  getMiddlePageSumForCorrectedUpdates,
+} from "../2024-05";
 import { readFileSync } from "graceful-fs";
 
 const testInputRules = `47|53
@@ -34,11 +37,27 @@ const fullInputRules = readFileSync("2024/05/2024-05-rules.txt", "utf8");
 const fullInputUpdates = readFileSync("2024/05/2024-05-updates.txt", "utf8");
 
 describe("AOC-2024-05", () => {
-  it("part1-test: returns so  me of middle pages of correct updates", () => {
-    expect(getMiddlePageSum(testInputRules, testInputUpdates)).toEqual(143);
+  it("part1-test: returns sum of middle pages of correct updates", () => {
+    expect(
+      getMiddlePageSumForCorrectUpdates(testInputRules, testInputUpdates),
+    ).toEqual(143);
   });
 
-  it("part2-test: returns some of middle pages of correct updates", () => {
-    expect(getMiddlePageSum(fullInputRules, fullInputUpdates)).toEqual(4959);
+  it("part1-full: returns sum of middle pages of correct updates", () => {
+    expect(
+      getMiddlePageSumForCorrectUpdates(fullInputRules, fullInputUpdates),
+    ).toEqual(4959);
+  });
+
+  xit("part2-test: returns sum of middle pages of of incorrect updates after correction", () => {
+    expect(
+      getMiddlePageSumForCorrectedUpdates(testInputRules, testInputUpdates),
+    ).toEqual(143);
+  });
+
+  xit("part2-full: returns sum of middle pages of of incorrect updates after correction", () => {
+    expect(
+      getMiddlePageSumForCorrectedUpdates(fullInputRules, fullInputUpdates),
+    ).toEqual(4959);
   });
 });
