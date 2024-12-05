@@ -49,15 +49,15 @@ describe("AOC-2024-05", () => {
     ).toEqual(4959);
   });
 
-  xit("part2-test: returns sum of middle pages of of incorrect updates after correction", () => {
+  it("part2-test: returns sum of middle pages of of incorrect updates after correction", () => {
     expect(
       getMiddlePageSumForCorrectedUpdates(testInputRules, testInputUpdates),
-    ).toEqual(143);
+    ).toEqual(123);
   });
 
-  xit("part2-full: returns sum of middle pages of of incorrect updates after correction", () => {
+  it("part2-full: returns sum of middle pages of of incorrect updates after correction", () => {
     expect(
       getMiddlePageSumForCorrectedUpdates(fullInputRules, fullInputUpdates),
-    ).toEqual(4959);
+    ).toEqual(4655);
   });
 });
