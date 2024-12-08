@@ -141,15 +141,27 @@ const moveGuardAndGetUpdatedRoom = (
   return room;
 };
 
-//part1
-export const getCountOfVisitedPositions = (input: string): number => {
+interface TurningPositions {
+  x: number;
+  y: number;
+  orientation: Orientation;
+}
+
+interface GuardMovementPositionsResult {
+  visitedPositions: Set<string>;
+  turningPositions: TurningPositions[];
+}
+
+const getGuardMovementPositions = (
+  room: Room,
+): GuardMovementPositionsResult => {
   const visitedPositions = new Set<string>();
-  let room = getRoom(input);
+  const turningPositions = [];
   let currentGuardPosition = getGuardPosition(room);
   let guardOrientation: Orientation = "UP";
-
   while (isPositionWithinRoom(currentGuardPosition, room)) {
-    printRoom(room);
+    // printRoom(room);
+    //add here logics to check whether the visitedPositions set already contains the stringified new position -> if yes, push in "LOOP" and break the "while"
     visitedPositions.add(JSON.stringify(currentGuardPosition));
 
     let nextMovePosition = getNextMovePosition(
@@ -159,6 +171,11 @@ export const getCountOfVisitedPositions = (input: string): number => {
 
     if (isNextPositionObstructed(nextMovePosition, room)) {
       guardOrientation = getNewGuardOrientation(guardOrientation);
+      turningPositions.push({
+        x: currentGuardPosition[0],
+        y: currentGuardPosition[1],
+        orientation: guardOrientation,
+      });
     }
 
     if (!isNextPositionObstructed(nextMovePosition, room)) {
@@ -171,6 +188,83 @@ export const getCountOfVisitedPositions = (input: string): number => {
       currentGuardPosition = nextMovePosition;
     }
   }
-  console.log(visitedPositions.size);
-  return visitedPositions.size;
+  return {
+    visitedPositions,
+    turningPositions,
+  };
 };
+
+//part1
+export const getCountOfVisitedPositions = (input: string): number => {
+  let room = getRoom(input);
+  return getGuardMovementPositions(room).visitedPositions.size;
+};
+
+//part2
+
+const getMovingDirection = () => {};
+
+export const getCountOfPossibleObstaclePositions = (input: string): number => {
+  let room = getRoom(input);
+  const turningPositions = getGuardMovementPositions(room).turningPositions;
+  console.log(turningPositions);
+  const possibleObstaclePositions = new Set<string>();
+
+  for (let i = 1; i <= turningPositions.length - 3; i++) {
+    if (turningPositions[i].orientation === "UP") {
+    }
+    if (turningPositions[i].orientation === "RIGHT") {
+    }
+    if (turningPositions[i].orientation === "DOWN") {
+      //find existing obstacles in area:
+      //have a function to get coordinates of all obstacles (a hashmap, ideally)
+      /*
+                        x: 0 ... turningPositions[i].x-2
+                        y: turningPositions[i].y+1 ... room.maxCoordinateY
+            
+                        loop over existing obstacles and get those with coordinates matching requirement above
+                        loop over the obstacles within the area
+                              based on the looped obstacle location, check where a new obstacle would have to be placed to hit the looped-over obstacle
+                              if the place for a new obstacle is available then:
+                              create a new room representation with the new obstacle and the guard position located based the newly placed obstacle
+                              call getGuardMovementPositions()
+                              if the starting position appears in the positions twice then this is a loop -> push the obstacle into the array of possible obstacles
+      
+            
+            
+                         */
+    }
+    if (turningPositions[i].orientation === "LEFT") {
+    }
+  }
+
+  //Finds only rectangular loops
+  // for (let i = 0; i <= turningPositions.length - 3; i++) {
+  //   if (
+  //     turningPositions[i][1] === turningPositions[i + 1][1] &&
+  //     turningPositions[i + 1][0] === turningPositions[i + 2][0]
+  //   ) {
+  //     possibleObstaclePositions.add(
+  //       JSON.stringify([
+  //         turningPositions[i][0] - 1,
+  //         turningPositions[i + 2][1],
+  //       ]),
+  //     );
+  //   }
+  // }
+
+  return possibleObstaclePositions.size;
+};
+
+/*
+DOWN+LEFT, check positions of obstacles in the area contained by the two
+  for each found obstacle try:
+  placing a new obstacle to reach the found obstacle
+  create a new room representation with the new obstacle and the guard position located based the newly places obstacle -> call getGuardMovementPositions() and if the starting position appears in the positions twice then this is a loop
+
+
+ */
+
+//idea2
+
+
