@@ -1,3 +1,6 @@
+import { Dictionary } from "../../utils/dataStructures/dictionary/dictionary";
+import { number } from "yargs";
+
 type Room = string[][];
 type PositionCoordinates = number[];
 
@@ -79,7 +82,7 @@ const printRoom = (room: Room): void => {
     }
     printout += "\n";
   }
-  // console.log(printout);
+  console.log(printout);
 };
 
 type Orientation = "UP" | "RIGHT" | "DOWN" | "LEFT";
@@ -141,6 +144,20 @@ const moveGuardAndGetUpdatedRoom = (
   return room;
 };
 
+const placeObstacleAndGetUpdatedRoom = (
+  room: Room,
+  obstaclePosition: PositionCoordinates,
+) => {
+  if (!isPositionWithinRoom(obstaclePosition, room)) {
+    return room;
+  }
+  const [obstacleX, obstacleY] = obstaclePosition;
+  const newRoom = [...room];
+  newRoom[obstacleY][obstacleX] = "#";
+
+  return newRoom;
+};
+
 interface TurningPositions {
   x: number;
   y: number;
@@ -150,19 +167,55 @@ interface TurningPositions {
 interface GuardMovementPositionsResult {
   visitedPositions: Set<string>;
   turningPositions: TurningPositions[];
+  isLoop: boolean;
 }
 
 const getGuardMovementPositions = (
   room: Room,
 ): GuardMovementPositionsResult => {
+  let duplicateEntries = 0;
+  let isLoop = false;
   const visitedPositions = new Set<string>();
-  const turningPositions = [];
+  const visitedPositionWithDirection: Record<string, number> = {};
+  const turningPositions: TurningPositions[] = [];
   let currentGuardPosition = getGuardPosition(room);
   let guardOrientation: Orientation = "UP";
   while (isPositionWithinRoom(currentGuardPosition, room)) {
-    // printRoom(room);
-    //add here logics to check whether the visitedPositions set already contains the stringified new position -> if yes, push in "LOOP" and break the "while"
+    const currentPositionsStringified = JSON.stringify(currentGuardPosition);
+
+    if (isLoop) {
+      break;
+    }
+
+    // if (visitedPositions.has(currentPositionsStringified)) {
+    //   duplicateEntries++;
+    // }
     visitedPositions.add(JSON.stringify(currentGuardPosition));
+
+    //visitedPositionWithDirection
+
+    if (
+      visitedPositionWithDirection[
+        JSON.stringify(currentGuardPosition) + currentGuardPosition
+      ] === 4
+    ) {
+      isLoop = true;
+      break;
+    }
+
+    if (
+      visitedPositionWithDirection[
+        JSON.stringify(currentGuardPosition) + currentGuardPosition
+      ]
+    ) {
+      visitedPositionWithDirection[
+        JSON.stringify(currentGuardPosition) + currentGuardPosition
+      ]++;
+    } else {
+      visitedPositionWithDirection[
+        JSON.stringify(currentGuardPosition) + currentGuardPosition
+      ] = 1;
+    }
 
     let nextMovePosition = getNextMovePosition(
       currentGuardPosition,
@@ -191,6 +244,7 @@ const getGuardMovementPositions = (
   return {
     visitedPositions,
     turningPositions,
+    isLoop: isLoop,
   };
 };
 
@@ -204,67 +258,70 @@ export const getCountOfVisitedPositions = (input: string): number => {
 
 const getMovingDirection = () => {};
 
-export const getCountOfPossibleObstaclePositions = (input: string): number => {
-  let room = getRoom(input);
-  const turningPositions = getGuardMovementPositions(room).turningPositions;
-  console.log(turningPositions);
-  const possibleObstaclePositions = new Set<string>();
-
-  for (let i = 1; i <= turningPositions.length - 3; i++) {
-    if (turningPositions[i].orientation === "UP") {
-    }
-    if (turningPositions[i].orientation === "RIGHT") {
-    }
-    if (turningPositions[i].orientation === "DOWN") {
-      //find existing obstacles in area:
-      //have a function to get coordinates of all obstacles (a hashmap, ideally)
-      /*
-                        x: 0 ... turningPositions[i].x-2
-                        y: turningPositions[i].y+1 ... room.maxCoordinateY
-            
-                        loop over existing obstacles and get those with coordinates matching requirement above
-                        loop over the obstacles within the area
-                              based on the looped obstacle location, check where a new obstacle would have to be placed to hit the looped-over obstacle
-                              if the place for a new obstacle is available then:
-                              create a new room representation with the new obstacle and the guard position located based the newly placed obstacle
-                              call getGuardMovementPositions()
-                              if the starting position appears in the positions twice then this is a loop -> push the obstacle into the array of possible obstacles
-      
-            
-            
-                         */
-    }
-    if (turningPositions[i].orientation === "LEFT") {
+const getAllObstaclePositions = (room: Room): PositionCoordinates[] => {
+  const [maxCoordinateX, maxCoordinateY] = getMaxRoomCoordinates(room);
+  const obstacles = [];
+  for (
+    let roomCoordinateY = 0;
+    roomCoordinateY <= maxCoordinateY;
+    roomCoordinateY++
+  ) {
+    for (
+      let roomCoordinateX = 0;
+      roomCoordinateX <= maxCoordinateX;
+      roomCoordinateX++
+    ) {
+      if (
+        getObjectAtRoomCoordinates([roomCoordinateX, roomCoordinateY], room) ===
+        "#"
+      ) {
+        obstacles.push([roomCoordinateX, roomCoordinateY]);
+      }
     }
   }
-
-  //Finds only rectangular loops
-  // for (let i = 0; i <= turningPositions.length - 3; i++) {
-  //   if (
-  //     turningPositions[i][1] === turningPositions[i + 1][1] &&
-  //     turningPositions[i + 1][0] === turningPositions[i + 2][0]
-  //   ) {
-  //     possibleObstaclePositions.add(
-  //       JSON.stringify([
-  //         turningPositions[i][0] - 1,
-  //         turningPositions[i + 2][1],
-  //       ]),
-  //     );
-  //   }
-  // }
-
-  return possibleObstaclePositions.size;
+  return obstacles;
 };
 
-/*
-DOWN+LEFT, check positions of obstacles in the area contained by the two
-  for each found obstacle try:
-  placing a new obstacle to reach the found obstacle
-  create a new room representation with the new obstacle and the guard position located based the newly places obstacle -> call getGuardMovementPositions() and if the starting position appears in the positions twice then this is a loop
+interface Limit {
+  lower: number;
+  upper: number;
+}
 
+const getAllObstaclesWithinArea = (
+  obstacles: PositionCoordinates[],
+  xLimit: Limit,
+  yLimit: Limit,
+): PositionCoordinates[] => {
+  return obstacles.filter(
+    (obstacle) =>
+      obstacle[0] >= xLimit.lower &&
+      obstacle[0] <= xLimit.upper &&
+      obstacle[1] >= yLimit.lower &&
+      obstacle[1] <= yLimit.upper,
+  );
+};
 
- */
+export const getCountOfPossibleObstaclePositions = (input: string): number => {
+  const room = getRoom(input);
+  // console.log("starting room");
+  // printRoom(room);
+  const movementPositions = [
+    ...getGuardMovementPositions(room).visitedPositions,
+  ]
+    .map((pos) => JSON.parse(pos))
+    .splice(1);
+  const guardStartingPosition = getGuardPosition(room);
+  const roomsWithPossibleObstacles: Room[] = [];
+  let loopCount = 0;
+  movementPositions.forEach((position) => {
+    if (
+      getGuardMovementPositions(
+        placeObstacleAndGetUpdatedRoom(getRoom(input), position),
+      ).isLoop
+    ) {
+      loopCount++;
+    }
+  });
 
-//idea2
-
-
+  return loopCount;
+};
