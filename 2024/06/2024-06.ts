@@ -1,6 +1,3 @@
-import { Dictionary } from "../../utils/dataStructures/dictionary/dictionary";
-import { number } from "yargs";
-
 type Room = string[][];
 type PositionCoordinates = number[];
 
@@ -173,7 +170,6 @@ interface GuardMovementPositionsResult {
 const getGuardMovementPositions = (
   room: Room,
 ): GuardMovementPositionsResult => {
-  let duplicateEntries = 0;
   let isLoop = false;
   const visitedPositions = new Set<string>();
   const visitedPositionWithDirection: Record<string, number> = {};
@@ -181,18 +177,11 @@ const getGuardMovementPositions = (
   let currentGuardPosition = getGuardPosition(room);
   let guardOrientation: Orientation = "UP";
   while (isPositionWithinRoom(currentGuardPosition, room)) {
-    const currentPositionsStringified = JSON.stringify(currentGuardPosition);
-
     if (isLoop) {
       break;
     }
 
-    // if (visitedPositions.has(currentPositionsStringified)) {
-    //   duplicateEntries++;
-    // }
     visitedPositions.add(JSON.stringify(currentGuardPosition));
-
-    //visitedPositionWithDirection
 
     if (
       visitedPositionWithDirection[
@@ -255,9 +244,6 @@ export const getCountOfVisitedPositions = (input: string): number => {
 };
 
 //part2
-
-const getMovingDirection = () => {};
-
 const getAllObstaclePositions = (room: Room): PositionCoordinates[] => {
   const [maxCoordinateX, maxCoordinateY] = getMaxRoomCoordinates(room);
   const obstacles = [];
@@ -303,15 +289,12 @@ const getAllObstaclesWithinArea = (
 
 export const getCountOfPossibleObstaclePositions = (input: string): number => {
   const room = getRoom(input);
-  // console.log("starting room");
-  // printRoom(room);
   const movementPositions = [
     ...getGuardMovementPositions(room).visitedPositions,
   ]
     .map((pos) => JSON.parse(pos))
     .splice(1);
-  const guardStartingPosition = getGuardPosition(room);
-  const roomsWithPossibleObstacles: Room[] = [];
+
   let loopCount = 0;
   movementPositions.forEach((position) => {
     if (
