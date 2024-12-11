@@ -15,22 +15,18 @@ const fullInput = readFileSync("2024/07/2024-07.txt", "utf8");
 
 describe("AOC-2024-07", () => {
   it("part1-test returns total calibration result", () => {
-    expect(getTotalCalibrationResult(testInput).twoOperators).toEqual(3749);
+    expect(getTotalCalibrationResult(testInput, 2)).toEqual(3749);
   });
 
   it("part1-full returns total calibration result", () => {
-    expect(getTotalCalibrationResult(fullInput).twoOperators).toEqual(
-      4998764814652,
-    );
+    expect(getTotalCalibrationResult(fullInput, 2)).toEqual(4998764814652);
   });
 
   it("part2-test returns total calibration result", () => {
-    expect(getTotalCalibrationResult(testInput).threeOperators).toEqual(11387);
+    expect(getTotalCalibrationResult(testInput, 3)).toEqual(11387);
   });
 
   it("part2-full returns total calibration result", () => {
-    expect(getTotalCalibrationResult(fullInput).threeOperators).toEqual(
-      37598910447546,
-    );
+    expect(getTotalCalibrationResult(fullInput, 3)).toEqual(37598910447546);
   });
 });
