@@ -1,20 +1,27 @@
-const getInstructions = (
-  input: string,
-): (EquationInstruction | undefined)[] => {
-  return input.split("\n").map((line) => {
-    const numbers = line.match(/\d+/g) ?? [];
-    if (!numbers.length) {
-      return;
-    }
-    return {
-      result: Number(numbers[0]),
-      numbers: numbers.splice(1).map(Number),
-    };
-  });
+const getInstructions = (input: string): EquationInstruction[] => {
+  return input
+    .split("\n")
+    .map((line) => {
+      const numbers = line.match(/\d+/g) ?? [];
+      if (!numbers.length) {
+        return;
+      }
+      return {
+        result: Number(numbers[0]),
+        numbers: numbers.splice(1).map(Number),
+      };
+    })
+    .filter((instr) => instr !== undefined);
 };
 
-const getOperatorPermutations = (requiredCountOfOperators: number) => {
-  const symbols = ["+", "*"];
+const getOperatorPermutations = (
+  requiredCountOfOperators: number,
+  usePipe?: boolean,
+) => {
+  const operators = ["+", "*"];
+  if (usePipe) {
+    operators.push("||");
+  }
   const results: string[] = [];
 
   function backtrack(current: string) {
@@ -23,8 +30,8 @@ const getOperatorPermutations = (requiredCountOfOperators: number) => {
       return;
     }
 
-    for (let symbol of symbols) {
-      backtrack(current + symbol);
+    for (let operator of operators) {
+      backtrack(current + operator);
     }
   }
 
@@ -56,14 +63,13 @@ interface EquationPermutation {
 type EquationPermutationSet = EquationPermutation[];
 
 const getEquationPermutationSets = (
-  equationInstructions: (EquationInstruction | undefined)[],
+  equationInstructions: EquationInstruction[],
+  usePipe?: boolean,
 ): EquationPermutationSet[] => {
   return equationInstructions.map((instruction) => {
-    if (!instruction) {
-      return [];
-    }
     const operatorPermutations = getOperatorPermutations(
       instruction.numbers.length - 1,
+      usePipe,
     );
     return operatorPermutations.map((permutation) => {
       const operators = permutation.split("");
@@ -109,29 +115,37 @@ const isAnyPermutationEqualToResult = (
   return isAnyPermutationSolvable;
 };
 
-export const getTotalCalibrationResult = (
-  input: string,
-  operators: string[],
-): number => {
-  const equationInstructions = getInstructions(input);
+//Result
+export const getTotalCalibrationResult = (input: string): number => {
+  //All
+  const equationInstructions = getInstructions(input).filter(Boolean);
   const equationPermutationSets =
     getEquationPermutationSets(equationInstructions);
-  const solvableEquationResults = equationPermutationSets.map((set) => {
-    if (isAnyPermutationEqualToResult(set)) {
-      return set[0].result;
-    }
-    /*
-            Take the unfulfilling set
-            Take the first item, and convert it into an input for getEquationPermutationSets
-            Adapt getEquationPermutationSets to take in a param which is an array of supported operators
-            Get getEquationPermutationSets with [+, *, ||]
-            In the isEqual check whether || operator is used. If yes, pass into the new function to process the || and then recursively call isEqual
-             */
+  const solvableEquationResults = equationPermutationSets
+    .filter(isAnyPermutationEqualToResult)
+    .map((set) => set[0].result);
 
-    console.log("Not equal", set);
-    return 0;
-  });
+  //Non-solvable
+  const resultsOfNonSolvableEquationPermutationSets = equationPermutationSets
+    .filter((set) => !isAnyPermutationEqualToResult(set))
+    .map((set) => set[0].result);
 
+  const nonSolvableEquationInstructions = equationInstructions.filter(
+    (instruction) =>
+      resultsOfNonSolvableEquationPermutationSets.includes(instruction.result),
+  );
+
+  const nonSolvableEquationPermutationSets = getEquationPermutationSets(
+    nonSolvableEquationInstructions,
+    true,
+  );
+  /*
+                                                                                                                  Take the unfulfilling set
+                                                                                                                  Take the first item, and convert it into an input for getEquationPermutationSets
+                                                                                                                  Adapt getEquationPermutationSets to take in a param which is an array of supported operators
+                                                                                                                  Get getEquationPermutationSets with [+, *, ||]
+                                                                                                                  In the isEqual check whether || operator is used. If yes, pass into the new function to process the || and then recursively call isEqual
+                                                                                                                   */
   return solvableEquationResults.reduce((acc, curr) => {
     acc += curr;
     return acc;
