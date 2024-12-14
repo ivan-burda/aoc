@@ -93,6 +93,20 @@ const isValidAntinode = (
   return node.id !== antennaA.id && node.id !== antennaB.id;
 };
 
+const getAntinodesCount = (
+  antinodes: Record<string, Set<Antinode>>,
+): number => {
+  const result = new Set();
+  Object.values(antinodes).forEach((antenaRelatedAntinodes) => {
+    antenaRelatedAntinodes.forEach((antinode) => {
+      result.add(JSON.stringify(antinode));
+    });
+  });
+
+  return result.size;
+};
+
+//part1
 export const getAntinodeLocationCount = (input: string): number => {
   const grid = input.split("\n").map((line) => line.split(""));
   const antennas = getAntennas(grid);
@@ -143,13 +157,19 @@ export const getAntinodeLocationCount = (input: string): number => {
       }
     },
   );
+  return getAntinodesCount(antinodes);
+};
 
-  const result = new Set();
-  Object.values(antinodes).forEach((antenaRelatedAntinodes) => {
-    antenaRelatedAntinodes.forEach((antinode) => {
-      result.add(JSON.stringify(antinode));
-    });
-  });
+//part2
+/*
+loop over antennas one by one
+for each two antennas get all there antinodes and resonant antinode as long as they are within the grid
+ */
 
-  return result.size;
+export const getResonantAntinodeLocationCount = (input: string): number => {
+  const grid = input.split("\n").map((line) => line.split(""));
+  const antennas = getAntennas(grid);
+  const antinodes: Record<string, Set<Antinode>> = {};
+
+  return getAntinodesCount(antinodes);
 };

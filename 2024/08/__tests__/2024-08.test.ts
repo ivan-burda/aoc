@@ -1,4 +1,7 @@
-import { getAntinodeLocationCount } from "../2024-08";
+import {
+  getAntinodeLocationCount,
+  getResonantAntinodeLocationCount,
+} from "../2024-08";
 import { readFileSync } from "graceful-fs";
 
 const testInput = `............
@@ -14,6 +17,17 @@ const testInput = `............
 ............
 ............`;
 
+const testInput2 = `T....#....
+...T......
+.T....#...
+.........#
+..#.......
+..........
+...#......
+..........
+....#.....
+..........`;
+
 const fullInput = readFileSync("2024/08/2024-08.txt", "utf8");
 
 describe("AOC-2024-08", () => {
@@ -23,5 +37,13 @@ describe("AOC-2024-08", () => {
 
   it("part1-full returns count of unique antinodes", () => {
     expect(getAntinodeLocationCount(fullInput)).toBe(240);
+  });
+
+  it("part2-test returns count of unique antinodes", () => {
+    expect(getResonantAntinodeLocationCount(testInput2)).toBe(9);
+  });
+
+  xit("part2-full returns count of unique antinodes", () => {
+    expect(getResonantAntinodeLocationCount(fullInput)).toBe(240);
   });
 });
