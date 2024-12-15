@@ -62,7 +62,7 @@ const isPositionWithinGrid = (
 type Antinode = {
   x: number;
   y: number;
-  id: string;
+  id?: string;
 };
 const getAntennaPairAntinodes = (
   antennaA: Antenna,
@@ -83,6 +83,33 @@ const getAntennaPairAntinodes = (
   };
 
   return [preNode, postNode];
+};
+
+const getAntennaPairHarmonicNodes = (
+  antennaA: Antenna,
+  antennaB: Antenna,
+  grid: Grid,
+): Antinode[] => {
+  const twoAntennasDistanceX = antennaA.x - antennaB.x;
+  const twoAntennasDistanceY = antennaA.y - antennaB.y;
+
+  const preNodes = [];
+  let isPrenodesSpaceAvailable = true;
+  let prenodeMultiplier = 0;
+  while (isPrenodesSpaceAvailable) {
+    const newPrenode = {
+      x: antennaA.x + twoAntennasDistanceX * prenodeMultiplier,
+      y: antennaA.y + twoAntennasDistanceY * prenodeMultiplier,
+    };
+    if (isPositionWithinGrid([newPrenode.x, newPrenode.y], grid)) {
+      preNodes.push(newPrenode);
+      prenodeMultiplier += 1;
+    } else {
+      isPrenodesSpaceAvailable = false;
+    }
+  }
+
+  return [...preNodes];
 };
 
 const isValidAntinode = (
@@ -170,6 +197,32 @@ export const getResonantAntinodeLocationCount = (input: string): number => {
   const grid = input.split("\n").map((line) => line.split(""));
   const antennas = getAntennas(grid);
   const antinodes: Record<string, Set<Antinode>> = {};
+
+  Object.entries(antennas).forEach(
+    ([antennaFrequencyType, antennaPositions]) => {
+      for (let i = 0; i < antennaPositions.length; i++) {
+        for (let j = 0; j < antennaPositions.length; j++) {
+          if (i !== j) {
+            const antennaA = antennaPositions[i];
+            const antennaB = antennaPositions[j];
+            const harmonicNodes = getAntennaPairHarmonicNodes(
+              antennaA,
+              antennaB,
+              grid,
+            );
+            harmonicNodes.forEach((harmonicNode) => {
+              if (antinodes[antennaFrequencyType]) {
+                antinodes[antennaFrequencyType].add(harmonicNode);
+              } else {
+                antinodes[antennaFrequencyType] = new Set();
+                antinodes[antennaFrequencyType].add(harmonicNode);
+              }
+            });
+          }
+        }
+      }
+    },
+  );
 
   return getAntinodesCount(antinodes);
 };
