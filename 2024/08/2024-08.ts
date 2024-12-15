@@ -93,23 +93,39 @@ const getAntennaPairHarmonicNodes = (
   const twoAntennasDistanceX = antennaA.x - antennaB.x;
   const twoAntennasDistanceY = antennaA.y - antennaB.y;
 
-  const preNodes = [];
-  let isPrenodesSpaceAvailable = true;
-  let prenodeMultiplier = 0;
-  while (isPrenodesSpaceAvailable) {
+  const preNodes: Antinode[] = [];
+  let isPreNodesSpaceAvailable = true;
+  let preNodeMultiplier = 0;
+  while (isPreNodesSpaceAvailable) {
     const newPrenode = {
-      x: antennaA.x + twoAntennasDistanceX * prenodeMultiplier,
-      y: antennaA.y + twoAntennasDistanceY * prenodeMultiplier,
+      x: antennaA.x + twoAntennasDistanceX * preNodeMultiplier,
+      y: antennaA.y + twoAntennasDistanceY * preNodeMultiplier,
     };
     if (isPositionWithinGrid([newPrenode.x, newPrenode.y], grid)) {
       preNodes.push(newPrenode);
-      prenodeMultiplier += 1;
+      preNodeMultiplier += 1;
     } else {
-      isPrenodesSpaceAvailable = false;
+      isPreNodesSpaceAvailable = false;
     }
   }
 
-  return [...preNodes];
+  const postNodes: Antinode[] = [];
+  // let isPostNodesSpaceAvailable = true;
+  // let postNodeMultiplier = 0;
+  // while (isPostNodesSpaceAvailable) {
+  //   const newPostNode = {
+  //     x: antennaA.x + twoAntennasDistanceX * postNodeMultiplier,
+  //     y: antennaA.y + twoAntennasDistanceY * postNodeMultiplier,
+  //   };
+  //   if (isPositionWithinGrid([newPostNode.x, newPostNode.y], grid)) {
+  //     preNodes.push(newPostNode);
+  //     postNodeMultiplier += 1;
+  //   } else {
+  //     isPostNodesSpaceAvailable = false;
+  //   }
+  // }
+
+  return [...preNodes, ...postNodes];
 };
 
 const isValidAntinode = (
@@ -188,11 +204,6 @@ export const getAntinodeLocationCount = (input: string): number => {
 };
 
 //part2
-/*
-loop over antennas one by one
-for each two antennas get all there antinodes and resonant antinode as long as they are within the grid
- */
-
 export const getResonantAntinodeLocationCount = (input: string): number => {
   const grid = input.split("\n").map((line) => line.split(""));
   const antennas = getAntennas(grid);
