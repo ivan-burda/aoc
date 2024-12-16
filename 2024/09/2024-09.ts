@@ -60,18 +60,110 @@ const reorderBlocksToEmptySpaces = (
   return blocks.filter((block) => block !== ".");
 };
 
-export const getChecksum = (input: string): number => {
+//part1
+export const getChecksumPart1 = (input: string): number => {
   const blocks = getBlocks(input);
   const emptySpaceIndices = getEmptySpaceIndices(blocks);
   const reorderedBlocks = reorderBlocksToEmptySpaces(blocks, emptySpaceIndices);
   return countChecksum(reorderedBlocks);
 };
 
+const getSameNumberBlocks = (
+  input: string,
+): { block: string; startIndex: number }[] => {
+  const matches = [...input.matchAll(/(\d)\1*/g)];
+  return matches.map((match) => ({
+    block: match[0],
+    startIndex: match.index!,
+  }));
+};
 
-/*
-go over empty space indices and for each
--remove the last item from the block-representation array
--place the item to the index of the empty space
+interface EmptySlot {
+  length: number;
+  startIndex: number;
+}
 
-use countChecksum for the re-ordered file
- */
+const getEmptySlots = (blocks: string[]): EmptySlot[] => {
+  const emptySlots = [];
+
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i] === ".") {
+      const emptySlot = {
+        length: 0,
+        startIndex: 0,
+      };
+      emptySlot.startIndex = i;
+      emptySlot.length = 1;
+      let l = 1;
+      while (blocks[i + l] === ".") {
+        emptySlot.length += 1;
+        l += 1;
+      }
+      emptySlots.push(emptySlot);
+      i = i + emptySlot.length - 1;
+    }
+  }
+  return emptySlots;
+};
+
+const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const countChecksum2 = (reorderedBlocks: string[]): number => {
+  return reorderedBlocks.reduce((acc, curr, index) => {
+    if (numbers.some((num) => num === curr)) {
+      acc += Number(curr) * index;
+    }
+    return acc;
+  }, 0);
+};
+
+//part2
+export const getChecksumPart2 = (input: string): number => {
+  const blocks = getBlocks(input);
+  const sameNumberBlocks = getSameNumberBlocks(blocks.join(""));
+
+  for (
+    let numberBlocksIterator = sameNumberBlocks.length - 1;
+    numberBlocksIterator >= 0;
+    numberBlocksIterator--
+  ) {
+    const emptySlots = getEmptySlots(blocks);
+    const currentNumberBlockLength =
+      sameNumberBlocks[numberBlocksIterator].block.length;
+    const firstAvailableEmptySlot = emptySlots.findIndex(
+      (slot) => slot.length >= currentNumberBlockLength,
+    );
+    if (
+      firstAvailableEmptySlot >= 0 &&
+      emptySlots[firstAvailableEmptySlot].startIndex <
+        sameNumberBlocks[numberBlocksIterator].startIndex
+    ) {
+      for (
+        let numberBlockLengthIterator = 0;
+        numberBlockLengthIterator <
+        sameNumberBlocks[numberBlocksIterator].block.length;
+        numberBlockLengthIterator++
+      ) {
+        [
+          blocks[
+            emptySlots[firstAvailableEmptySlot].startIndex +
+              numberBlockLengthIterator
+          ],
+          blocks[
+            sameNumberBlocks[numberBlocksIterator].startIndex +
+              numberBlockLengthIterator
+          ],
+        ] = [
+          blocks[
+            sameNumberBlocks[numberBlocksIterator].startIndex +
+              numberBlockLengthIterator
+          ],
+          blocks[
+            emptySlots[firstAvailableEmptySlot].startIndex +
+              numberBlockLengthIterator
+          ],
+        ];
+      }
+    }
+  }
+  return countChecksum2(blocks);
+};
