@@ -5,12 +5,6 @@ const countChecksum = (reorderedBlocks: string[]): number => {
   }, 0);
 };
 
-/*
-2 3  3  3  13  3  12 14   14   13  14  02
-00...111...2...333.44.5555.6666.777.888899
-
-00...222...4...666.88.10101010.12121212.141414.161616161818
- */
 export const getBlocks = (input: string): string[] => {
   return input.split("").reduce<string[]>((acc, currentBlock, currentIndex) => {
     if (currentIndex % 2 === 1) {
@@ -74,7 +68,7 @@ const getSameNumberBlocks = (
   const matches = [...input.matchAll(/(\d)\1*/g)];
   return matches.map((match) => ({
     block: match[0],
-    startIndex: match.index!,
+    startIndex: match.index,
   }));
 };
 
@@ -165,5 +159,6 @@ export const getChecksumPart2 = (input: string): number => {
       }
     }
   }
+  // console.log(blocks);
   return countChecksum2(blocks);
 };
