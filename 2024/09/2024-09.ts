@@ -209,7 +209,6 @@ const recreateAsString = (blocks: Block[]): string => {
 };
 
 const countChecksum2 = (reorderedBlocks: string[]): number => {
-  console.log(reorderedBlocks);
   return reorderedBlocks.reduce((acc, curr, index) => {
     if (!curr.includes(".")) {
       acc += Number(curr) * index;
@@ -226,11 +225,12 @@ function splitStringByLength(str: string, chunkSize: number): string[] {
   return result;
 }
 
+const mergeDots = () => {};
+
 //part2
 export const getChecksumPart2 = (input: string): number => {
   let blocks = getBlocks2(input);
   const sameNumberBlocks = getSameNumberBlocks(blocks);
-  let joinedBlocks: string[] = [];
   for (let i = 0; i < sameNumberBlocks.length; i++) {
     const sameNumberBlock = getSameNumberBlocks(blocks)[i];
     const firstSuitableEmptyBlock = getFirstSuitableEmptyBlock(
@@ -261,20 +261,9 @@ export const getChecksumPart2 = (input: string): number => {
             originalIndex: -1,
           });
         }
-
-        joinedBlocks = blocks
-          .filter((item) => item.block !== "noGap")
-          .flatMap((item) => {
-            if (item.block.includes(".")) {
-              return String(item.block);
-            }
-
-            return item.block;
-          });
       }
     }
   }
-  const result = countChecksum2(joinedBlocks);
-  console.log(result);
-  return result;
+  console.log(blocks);
+  return 0;
 };
