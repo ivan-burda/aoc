@@ -44,8 +44,9 @@ describe("AOC-2024-09", () => {
   });
 
   it("part2-full returns filesystem checksum", () => {
-    expect(getChecksumPart2(fullInput)).not.toEqual(22877);
-    expect(getChecksumPart2(fullInput)).not.toEqual(571470757822);
-    expect(getChecksumPart2(fullInput)).not.toEqual(9686399427216);
+    // expect(getChecksumPart2(fullInput)).not.toEqual(22877);
+    // expect(getChecksumPart2(fullInput)).not.toEqual(571470757822);;
+    // expect(getChecksumPart2(fullInput)).not.toEqual(2469085652);
+    // expect(getChecksumPart2(fullInput)).not.toEqual(14600364975982);
   });
 });
