@@ -88,24 +88,24 @@ describe("AOC-2024-10", () => {
   it("part1-full returns trailhead score sum", () => {
     expect(getTrailheadScoreSum(fullInput)).toEqual(468);
   });
-
+  //part2
   it("part2-test1 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput1)).toEqual(2);
+    expect(getTrailheadScoreSum(part2TestInput1)).toEqual(3);
   });
 
   it("part2-test2 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput2)).toEqual(4);
+    expect(getTrailheadScoreSum(part2TestInput2)).toEqual(13);
   });
 
   it("part2-test3 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput3)).toEqual(3);
+    expect(getTrailheadScoreSum(part2TestInput3)).toEqual(227);
   });
 
   it("part2-test4 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput4)).toEqual(36);
+    expect(getTrailheadScoreSum(part2TestInput4)).toEqual(81);
   });
 
   it("part2-full returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(fullInput)).toEqual(468);
+    expect(getTrailheadScoreSum(fullInput)).toEqual(966);
   });
 });

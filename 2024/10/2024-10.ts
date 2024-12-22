@@ -69,7 +69,7 @@ const getNumberAtAreaCoordinates = (
 };
 
 const globalTails: Record<string, Set<string>> = {};
-
+const globalRatings: Record<string, string[]> = {};
 const getHeadRelatedTails = (
   area: Area,
   stepCoordinates: Coordinates,
@@ -122,9 +122,11 @@ const getHeadRelatedTails = (
     const headReference = `${JSON.stringify(head.x)}-${JSON.stringify(head.y)}`;
     if (globalTails[headReference]) {
       globalTails[headReference].add(`${tail.x}-${tail.y}`);
+      globalRatings[headReference].push(`${tail.x}-${tail.y}`);
     } else {
       globalTails[headReference] = new Set();
       globalTails[headReference].add(`${tail.x}-${tail.y}`);
+      globalRatings[headReference] = [`${tail.x}-${tail.y}`];
     }
   });
   worthyCoordinates.forEach((coordinate) => {
@@ -156,10 +158,15 @@ export const getTrailheadScoreSum = (input: string): number => {
       }
     }
   }
-  console.log(globalTails);
-
-  return Object.values(globalTails).reduce((acc, currentHeadRelatedTails) => {
-    acc += currentHeadRelatedTails.size;
+  console.log(globalRatings);
+  return Object.values(globalRatings).reduce((acc, currentHeadRelatedTails) => {
+    acc += currentHeadRelatedTails.length;
     return acc;
   }, 0);
+
+  // console.log(globalTails);
+  // return Object.values(globalTails).reduce((acc, currentHeadRelatedTails) => {
+  //   acc += currentHeadRelatedTails.size;
+  //   return acc;
+  // }, 0);
 };
