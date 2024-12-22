@@ -68,14 +68,16 @@ const getNumberAtAreaCoordinates = (
   return area[areaCoordinates.y][areaCoordinates.x];
 };
 
-const globalTails: Record<string, Set<string>> = {};
-const globalRatings: Record<string, string[]> = {};
+type GlobalHeadRelatedTails = Record<string, Set<string>>;
+type GlobalHeadRatings = Record<string, string[]>;
+
 const getHeadRelatedTails = (
   area: Area,
   stepCoordinates: Coordinates,
   head: Coordinates,
-  locatedTails: Coordinates[] = [],
-): Coordinates[] => {
+  globalHeadRelatedTails: GlobalHeadRelatedTails,
+  globalHeadRatings: GlobalHeadRatings,
+): void => {
   const locatedTailsTemp: Coordinates[] = [];
   const top = { x: stepCoordinates.x, y: stepCoordinates.y - 1 };
   const right = { x: stepCoordinates.x + 1, y: stepCoordinates.y };
@@ -118,25 +120,28 @@ const getHeadRelatedTails = (
   if (currentValue === 8 && leftValue === 9) {
     locatedTailsTemp.push(left);
   }
+
   locatedTailsTemp.forEach((tail) => {
     const headReference = `${JSON.stringify(head.x)}-${JSON.stringify(head.y)}`;
-    if (globalTails[headReference]) {
-      globalTails[headReference].add(`${tail.x}-${tail.y}`);
-      globalRatings[headReference].push(`${tail.x}-${tail.y}`);
+    if (globalHeadRelatedTails[headReference]) {
+      globalHeadRelatedTails[headReference].add(`${tail.x}-${tail.y}`);
+      globalHeadRatings[headReference].push(`${tail.x}-${tail.y}`);
     } else {
-      globalTails[headReference] = new Set();
-      globalTails[headReference].add(`${tail.x}-${tail.y}`);
-      globalRatings[headReference] = [`${tail.x}-${tail.y}`];
+      globalHeadRelatedTails[headReference] = new Set();
+      globalHeadRelatedTails[headReference].add(`${tail.x}-${tail.y}`);
+      globalHeadRatings[headReference] = [`${tail.x}-${tail.y}`];
     }
   });
-  worthyCoordinates.forEach((coordinate) => {
-    getHeadRelatedTails(area, coordinate, head, [
-      ...locatedTailsTemp,
-      ...locatedTails,
-    ]);
-  });
 
-  return locatedTails ?? [];
+  worthyCoordinates.forEach((coordinate) => {
+    getHeadRelatedTails(
+      area,
+      coordinate,
+      head,
+      globalHeadRelatedTails,
+      globalHeadRatings,
+    );
+  });
 };
 
 interface Result {
@@ -144,22 +149,31 @@ interface Result {
   trailheadRatingSum: number;
 }
 
-export const getTrailheadCalculations = (input: string): Result => {
+export const getTrailheadStats = (input: string): Result => {
   const area = getArea(input);
   const heads = getAllHeadCoordinates(area);
+  const globalHeadRelatedTails: GlobalHeadRelatedTails = {};
+  const globalHeadRatings: GlobalHeadRatings = {};
+
   for (let i = 0; i < heads.length; i++) {
-    getHeadRelatedTails(area, heads[i], heads[i]);
+    getHeadRelatedTails(
+      area,
+      heads[i],
+      heads[i],
+      globalHeadRelatedTails,
+      globalHeadRatings,
+    );
   }
 
   return {
-    trailheadScoreSum: Object.values(globalTails).reduce(
+    trailheadScoreSum: Object.values(globalHeadRelatedTails).reduce(
       (acc, currentHeadRelatedTails) => {
         acc += currentHeadRelatedTails.size;
         return acc;
       },
       0,
     ),
-    trailheadRatingSum: Object.values(globalRatings).reduce(
+    trailheadRatingSum: Object.values(globalHeadRatings).reduce(
       (acc, currentHeadRelatedTails) => {
         acc += currentHeadRelatedTails.length;
         return acc;
