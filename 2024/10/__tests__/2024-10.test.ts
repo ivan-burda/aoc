@@ -1,4 +1,4 @@
-import { getTrailheadScoreSum } from "../2024-10";
+import { getTrailheadCalculations } from "../2024-10";
 import { readFileSync } from "graceful-fs";
 
 const testInput1 = `...0...
@@ -70,42 +70,50 @@ const fullInput = readFileSync("2024/10/2024-10.txt", "utf8");
 
 describe("AOC-2024-10", () => {
   it("part1-test1 returns trailhead score sum", () => {
-    expect(getTrailheadScoreSum(testInput1)).toEqual(2);
+    expect(getTrailheadCalculations(testInput1).trailheadScoreSum).toEqual(2);
   });
 
   it("part1-test2 returns trailhead score sum", () => {
-    expect(getTrailheadScoreSum(testInput2)).toEqual(4);
+    expect(getTrailheadCalculations(testInput2).trailheadScoreSum).toEqual(4);
   });
 
   it("part1-test3 returns trailhead score sum", () => {
-    expect(getTrailheadScoreSum(testInput3)).toEqual(3);
+    expect(getTrailheadCalculations(testInput3).trailheadScoreSum).toEqual(3);
   });
 
   it("part1-test4 returns trailhead score sum", () => {
-    expect(getTrailheadScoreSum(testInput4)).toEqual(36);
+    expect(getTrailheadCalculations(testInput4).trailheadScoreSum).toEqual(36);
   });
 
   it("part1-full returns trailhead score sum", () => {
-    expect(getTrailheadScoreSum(fullInput)).toEqual(468);
+    expect(getTrailheadCalculations(fullInput).trailheadScoreSum).toEqual(468);
   });
   //part2
-  it("part2-test1 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput1)).toEqual(3);
+  it("part2-test1 returns trailhead rating sum", () => {
+    expect(
+      getTrailheadCalculations(part2TestInput1).trailheadRatingSum,
+    ).toEqual(3);
   });
 
-  it("part2-test2 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput2)).toEqual(13);
+  it("part2-test2 returns trailhead rating sum", () => {
+    expect(
+      getTrailheadCalculations(part2TestInput2).trailheadRatingSum,
+    ).toEqual(13);
   });
 
-  it("part2-test3 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput3)).toEqual(227);
+  it("part2-test3 returns trailhead rating sum", () => {
+    expect(
+      getTrailheadCalculations(part2TestInput3).trailheadRatingSum,
+    ).toEqual(227);
   });
 
-  it("part2-test4 returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(part2TestInput4)).toEqual(81);
+  it("part2-test4 returns trailhead rating sum", () => {
+    expect(
+      getTrailheadCalculations(part2TestInput4).trailheadRatingSum,
+    ).toEqual(81);
   });
 
-  it("part2-full returns trailhead rating", () => {
-    expect(getTrailheadScoreSum(fullInput)).toEqual(966);
+  it("part2-full returns trailhead rating sum", () => {
+    expect(getTrailheadCalculations(fullInput).trailheadRatingSum).toEqual(966);
   });
 });

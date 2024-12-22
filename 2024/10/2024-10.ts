@@ -139,34 +139,32 @@ const getHeadRelatedTails = (
   return locatedTails ?? [];
 };
 
-export const getTrailheadScoreSum = (input: string): number => {
+interface Result {
+  trailheadScoreSum: number;
+  trailheadRatingSum: number;
+}
+
+export const getTrailheadCalculations = (input: string): Result => {
   const area = getArea(input);
   const heads = getAllHeadCoordinates(area);
-  const headRelatedTails: Record<string, Coordinates[]> = {};
-
   for (let i = 0; i < heads.length; i++) {
-    const tails = getHeadRelatedTails(area, heads[i], heads[i]);
-    if (tails.length) {
-      const headReference = `${JSON.stringify(heads[i].x)}-${JSON.stringify(heads[i].y)}`;
-      if (headRelatedTails[headReference]) {
-        headRelatedTails[headReference] = [...tails];
-      } else {
-        headRelatedTails[headReference] = [
-          ...headRelatedTails[headReference],
-          ...tails,
-        ];
-      }
-    }
+    getHeadRelatedTails(area, heads[i], heads[i]);
   }
-  console.log(globalRatings);
-  return Object.values(globalRatings).reduce((acc, currentHeadRelatedTails) => {
-    acc += currentHeadRelatedTails.length;
-    return acc;
-  }, 0);
 
-  // console.log(globalTails);
-  // return Object.values(globalTails).reduce((acc, currentHeadRelatedTails) => {
-  //   acc += currentHeadRelatedTails.size;
-  //   return acc;
-  // }, 0);
+  return {
+    trailheadScoreSum: Object.values(globalTails).reduce(
+      (acc, currentHeadRelatedTails) => {
+        acc += currentHeadRelatedTails.size;
+        return acc;
+      },
+      0,
+    ),
+    trailheadRatingSum: Object.values(globalRatings).reduce(
+      (acc, currentHeadRelatedTails) => {
+        acc += currentHeadRelatedTails.length;
+        return acc;
+      },
+      0,
+    ),
+  };
 };
