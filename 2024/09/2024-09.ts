@@ -1,5 +1,5 @@
+//part1 - helper functions
 const countChecksum = (reorderedBlocks: string[]): number => {
-  console.log(reorderedBlocks);
   return reorderedBlocks.reduce((acc, curr, index) => {
     acc += Number(curr) * index;
     return acc;
@@ -56,14 +56,14 @@ const reorderBlocksToEmptySpaces = (
 };
 
 //part1
-export const getChecksumPart1 = (input: string): number => {
+export const getPart1Checksum = (input: string): number => {
   const blocks = getBlocks(input);
   const emptySpaceIndices = getEmptySpaceIndices(blocks);
   const reorderedBlocks = reorderBlocksToEmptySpaces(blocks, emptySpaceIndices);
   return countChecksum(reorderedBlocks);
 };
 
-//////
+//part2 - helper functions
 interface Block {
   block: string;
   length: number;
@@ -71,7 +71,7 @@ interface Block {
   originalIndex: number;
 }
 
-export const getBlocks2 = (input: string): Block[] => {
+export const getPart2Blocks = (input: string): Block[] => {
   return input.split("").reduce<Block[]>((acc, currentBlock, currentIndex) => {
     if (currentIndex % 2 === 1) {
       if (currentBlock !== "0") {
@@ -166,7 +166,7 @@ const getRemainingEmptyBlockSpaces = (
   return getEmptySpace(difference);
 };
 
-const countChecksum2 = (reorderedBlocks: string[]): number => {
+const calculateChecksum = (reorderedBlocks: string[]): number => {
   return reorderedBlocks.reduce((acc, curr, index) => {
     if (!curr.includes(".")) {
       acc += Number(curr) * index;
@@ -175,7 +175,6 @@ const countChecksum2 = (reorderedBlocks: string[]): number => {
   }, 0);
 };
 
-//part2
 function splitStringIntoChunks(str: string, chunkSize: number) {
   if (chunkSize <= 0) {
     throw new Error("Chunk size must be greater than 0.");
@@ -188,41 +187,11 @@ function splitStringIntoChunks(str: string, chunkSize: number) {
   return result;
 }
 
-function parseString(input: string): (number | string)[] {
-  const result: (number | string)[] = [];
-  let temp = "";
-
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-
-    if (char === "-" || char === "." || i === input.length - 1) {
-      if (i === input.length - 1 && char !== "-" && char !== ".") {
-        temp += char;
-      }
-
-      if (temp !== "") {
-        if (!Number.isNaN(parseFloat(temp))) {
-          result.push(parseFloat(temp));
-        } else {
-          result.push(temp);
-        }
-        temp = "";
-      }
-
-      if (char === ".") {
-        result.push(".");
-      }
-    } else {
-      temp += char; // Add the character to the current segment
-    }
-  }
-
-  return result;
-}
-
-export const getChecksumPart2 = (input: string): number => {
-  let blocks = getBlocks2(input);
+//part2
+export const getPart2Checksum = (input: string): number => {
+  let blocks = getPart2Blocks(input);
   const sameNumberBlocks = getSameNumberBlocks(blocks);
+
   for (let i = 0; i < sameNumberBlocks.length; i++) {
     const sameNumberBlock = sameNumberBlocks[i];
     const firstSuitableEmptyBlock = getFirstSuitableEmptyBlock(
@@ -240,7 +209,7 @@ export const getChecksumPart2 = (input: string): number => {
       const indexToPlaceTheNumbersTo = blocks.findIndex(
         (item) => item.index === firstSuitableEmptyBlock.index,
       );
-      // const indexToPlaceTheEmptySpacesTo = sameNumberBlock.index;
+
       let indexToPlaceTheEmptySpacesTo = -1;
       for (let j = blocks.length - 1; j > 0; j--) {
         if (blocks[j].block === sameNumberBlock.block) {
@@ -256,8 +225,6 @@ export const getChecksumPart2 = (input: string): number => {
           blocks[indexToPlaceTheEmptySpacesTo],
           blocks[indexToPlaceTheNumbersTo],
         ];
-        // blocks[indexToPlaceTheNumbersTo] = sameNumberBlock;
-        // blocks[indexToPlaceTheEmptySpacesTo] = firstSuitableEmptyBlock;
 
         if (remainingEmptyBlockSpaces.length > 0) {
           blocks.splice(indexToPlaceTheNumbersTo + 1, 0, {
@@ -271,21 +238,21 @@ export const getChecksumPart2 = (input: string): number => {
     }
     blocks = blocks.map((block, index) => ({ ...block, index }));
   }
+
   const converted = blocks
-    .flatMap((block, index) => {
+    .flatMap((block) => {
       if (block.block.includes(".")) {
         return block.block.split("");
       }
       if (block.block.includes("_")) {
-        return "";
+        return "_";
       }
       return splitStringIntoChunks(
         block.block,
         String(block.originalIndex).length,
       );
     })
-    .filter((block) => block !== "");
-  // const readyToCount = parseString(converted).map((item) => String(item));
-  console.log(countChecksum2(converted));
-  return countChecksum2(converted);
+    .filter((block) => block !== "_");
+
+  return calculateChecksum(converted);
 };
