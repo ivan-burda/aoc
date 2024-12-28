@@ -239,7 +239,7 @@ export const getPart2Checksum = (input: string): number => {
     blocks = blocks.map((block, index) => ({ ...block, index }));
   }
 
-  const converted = blocks
+  const convertedForChecksumCounting = blocks
     .flatMap((block) => {
       if (block.block.includes(".")) {
         return block.block.split("");
@@ -254,5 +254,5 @@ export const getPart2Checksum = (input: string): number => {
     })
     .filter((block) => block !== "_");
 
-  return calculateChecksum(converted);
+  return calculateChecksum(convertedForChecksumCounting);
 };
