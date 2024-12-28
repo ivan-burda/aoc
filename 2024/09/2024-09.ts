@@ -138,7 +138,7 @@ const getSameNumberBlocks = (blocks: Block[]): SameNumberBlockInfo[] => {
     if (!blocks[i].block.includes(".") && !blocks[i].block.includes("_")) {
       results.push({
         block: blocks[i].block,
-        length: blocks[i].block.length,
+        length: blocks[i].block.length / String(blocks[i].originalIndex).length,
         index: i,
         originalIndex: blocks[i].originalIndex,
       });
@@ -224,7 +224,7 @@ export const getChecksumPart2 = (input: string): number => {
   let blocks = getBlocks2(input);
   const sameNumberBlocks = getSameNumberBlocks(blocks);
   for (let i = 0; i < sameNumberBlocks.length; i++) {
-    const sameNumberBlock = getSameNumberBlocks(blocks)[i];
+    const sameNumberBlock = sameNumberBlocks[i];
     const firstSuitableEmptyBlock = getFirstSuitableEmptyBlock(
       blocks,
       sameNumberBlock.length,
@@ -236,14 +236,28 @@ export const getChecksumPart2 = (input: string): number => {
       );
       firstSuitableEmptyBlock.length = sameNumberBlock.length;
       firstSuitableEmptyBlock.block = getEmptySpace(sameNumberBlock.length);
+
       const indexToPlaceTheNumbersTo = blocks.findIndex(
         (item) => item.index === firstSuitableEmptyBlock.index,
       );
-
-      const indexToPlaceTheEmptySpacesTo = sameNumberBlock.index;
+      // const indexToPlaceTheEmptySpacesTo = sameNumberBlock.index;
+      let indexToPlaceTheEmptySpacesTo = -1;
+      for (let j = blocks.length - 1; j > 0; j--) {
+        if (blocks[j].block === sameNumberBlock.block) {
+          indexToPlaceTheEmptySpacesTo = j;
+          break;
+        }
+      }
       if (indexToPlaceTheNumbersTo < indexToPlaceTheEmptySpacesTo) {
-        blocks[indexToPlaceTheNumbersTo] = sameNumberBlock;
-        blocks[indexToPlaceTheEmptySpacesTo] = firstSuitableEmptyBlock;
+        [
+          blocks[indexToPlaceTheNumbersTo],
+          blocks[indexToPlaceTheEmptySpacesTo],
+        ] = [
+          blocks[indexToPlaceTheEmptySpacesTo],
+          blocks[indexToPlaceTheNumbersTo],
+        ];
+        // blocks[indexToPlaceTheNumbersTo] = sameNumberBlock;
+        // blocks[indexToPlaceTheEmptySpacesTo] = firstSuitableEmptyBlock;
 
         if (remainingEmptyBlockSpaces.length > 0) {
           blocks.splice(indexToPlaceTheNumbersTo + 1, 0, {
@@ -260,7 +274,7 @@ export const getChecksumPart2 = (input: string): number => {
   const converted = blocks
     .flatMap((block, index) => {
       if (block.block.includes(".")) {
-        return block.block;
+        return block.block.split("");
       }
       if (block.block.includes("_")) {
         return "";
@@ -270,13 +284,8 @@ export const getChecksumPart2 = (input: string): number => {
         String(block.originalIndex).length,
       );
     })
-    .filter((item) => item !== "")
-    .join("-")
-    .replaceAll("-.-", ".")
-    .replaceAll(".-", ".")
-    .replaceAll("-.", ".");
-  const readyToCount = parseString(converted).map((item) => String(item));
-
-  console.log(countChecksum2(readyToCount));
-  return countChecksum2(readyToCount);
+    .filter((block) => block !== "");
+  // const readyToCount = parseString(converted).map((item) => String(item));
+  console.log(countChecksum2(converted));
+  return countChecksum2(converted);
 };
