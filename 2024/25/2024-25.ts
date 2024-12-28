@@ -20,15 +20,11 @@ const getKeysAndLocks = (
     (separatedParts, currentPart) => {
       if (currentPart.startsWith("#####")) {
         separatedParts.locks.push(
-          currentPart
-            .split(/\n/)
-            .map((line) => line.replaceAll(".", "0").split("")),
+          currentPart.split(/\n/).map((line) => line.split("")),
         );
       } else {
         separatedParts.keys.push(
-          currentPart
-            .split(/\n/)
-            .map((line) => line.replaceAll(".", "0").split("")),
+          currentPart.split(/\n/).map((line) => line.split("")),
         );
       }
       return separatedParts;
