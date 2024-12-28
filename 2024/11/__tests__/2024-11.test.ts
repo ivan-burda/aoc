@@ -1,19 +1,18 @@
-import { getStoneCount } from "../2024-11";
-import { readFileSync } from "graceful-fs";
+import { getStoneCountOptimized } from "../2024-11";
 
 const testInput = `125 17`;
 const fullInput = `1117 0 8 21078 2389032 142881 93 385`;
 
 describe("AOC-2024-11", () => {
   it("part1-test returns count of stones after blinking 25 times", () => {
-    expect(getStoneCount(testInput, 25)).toEqual(55312);
+    expect(getStoneCountOptimized(testInput, 25)).toEqual(55312);
   });
 
   it("part1-full returns count of stones after blinking 25 times", () => {
-    expect(getStoneCount(fullInput, 25)).toEqual(224529);
+    expect(getStoneCountOptimized(fullInput, 25)).toEqual(224529);
   });
 
   it("part2-full returns count of stones after blinking 75 times", () => {
-    expect(getStoneCount(fullInput, 75)).toEqual(1);
+    expect(getStoneCountOptimized(fullInput, 75)).toEqual(266820198587914);
   });
 });

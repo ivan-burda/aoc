@@ -1,29 +1,34 @@
-const blink = (beforeParts: string[], blinkCount: number): string[] => {
-  let afterParts: string[] = [];
-  if (blinkCount > 0) {
-    beforeParts.forEach((part) => {
-      if (part === "0") {
-        afterParts.push("1");
-      } else if (part.length % 2 === 0) {
-        const halfLength = part.length / 2;
-        let firstHalf = part.substring(0, halfLength);
-        let secondHalf = part.substring(halfLength).replace(/^0+(?=\d)/, "");
-        afterParts.push(firstHalf);
-        afterParts.push(secondHalf);
-        return;
-      } else {
-        afterParts.push(String(Number(part) * 2024));
-      }
-    });
-    return blink(afterParts, blinkCount - 1);
-  } else {
-    return beforeParts;
-  }
-};
+export const getStoneCountOptimized = (
+  input: string,
+  timesToBlink: number,
+): number => {
+  let beforeStones: Record<string, number> = {};
+  input.split(" ").forEach((stone: string) => {
+    beforeStones[stone] = 1;
+  });
 
-export const getStoneCount = (input: string, blinkCount: number): number => {
-  let beforeParts: string[] = input.split(" ");
-  const result = blink(beforeParts, blinkCount).length;
-  console.log(result);
-  return result;
+  while (timesToBlink > 0) {
+    const afterStones: Record<string, number> = {};
+
+    for (const [stone, count] of Object.entries(beforeStones)) {
+      if (stone === "0") {
+        afterStones["1"] = (afterStones["1"] || 0) + count;
+      } else if (stone.length % 2 === 0) {
+        const halfLength = stone.length / 2;
+        const firstHalf = stone.slice(0, halfLength);
+        const secondHalf = stone.slice(halfLength).replace(/^0+(?=\d)/, "");
+
+        afterStones[firstHalf] = (afterStones[firstHalf] || 0) + count;
+        afterStones[secondHalf] = (afterStones[secondHalf] || 0) + count;
+      } else {
+        const newStone = String(Number(stone) * 2024);
+        afterStones[newStone] = (afterStones[newStone] || 0) + count;
+      }
+    }
+
+    timesToBlink--;
+    beforeStones = afterStones;
+  }
+
+  return Object.values(beforeStones).reduce((sum, count) => sum + count, 0);
 };
